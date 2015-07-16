@@ -1,5 +1,7 @@
 name := "gdx-utils"
 
+organization := "rat-recommends"
+
 version := "1.0"
 
 scalaVersion := "2.11.7"
