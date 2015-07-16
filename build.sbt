@@ -1,4 +1,4 @@
-name := "test-lib"
+name := "gdx-utils"
 
 version := "1.0"
 
