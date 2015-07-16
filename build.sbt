@@ -5,10 +5,7 @@ homepage := Some(url("https://github.com/ratrecommends/gdx/"))
 licenses += "BSD New" -> url("http://opensource.org/licenses/BSD-3-Clause")
 description := "Some helpful scala utils for libgdx"
 version := "0.1"
-scmInfo := Some(ScmInfo(
-  url("git@github.com:ratrecommends/gdx.git"),
-  "scm:git:git@github.com:ratrecommends/gdx.git"
-))
+
 pomExtra := {
   <developers>
     <developer>
@@ -18,6 +15,10 @@ pomExtra := {
       <url>https://github.com/vlaaad/</url>
     </developer>
   </developers>
+  <scm>
+    <url>https://github.com/ratrecommends/gdx.git</url>
+    <connection>scm:git:git@github.com:ratrecommends/gdx.git</connection>
+  </scm>
 }
 
 useGpg := true
@@ -44,7 +45,13 @@ scalacOptions ++= Seq(
   "-language:implicitConversions"
 )
 
-publishTo := Some(Resolver.file("file", file("releases")))
+publishTo := {
+  val nexus = "https://oss.sonatype.org/"
+  if (isSnapshot.value)
+    Some("snapshots" at nexus + "content/repositories/snapshots")
+  else
+    Some("releases" at nexus + "service/local/staging/deploy/maven2")
+}
 
 publishMavenStyle := true
 
