@@ -1,6 +1,6 @@
 name := "gdx-utils"
 
-organization := "rat-recommends"
+organization := "com.rat-recommends"
 
 version := "1.0"
 
