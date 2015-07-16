@@ -21,3 +21,9 @@ scalacOptions ++= Seq(
   "-language:postfixOps",
   "-language:implicitConversions"
 )
+
+publishTo := Some(Resolver.file("file", file("releases")))
+
+publishMavenStyle := true
+
+publishArtifact in Test := false
