@@ -24,7 +24,7 @@ scalacOptions ++= Seq(
   "-language:implicitConversions"
 )
 
-publishTo := Some(Resolver.file("file", file(".")))
+publishTo := Some(Resolver.file("file", file("releases")))
 
 publishMavenStyle := true
 
