@@ -1,19 +1,12 @@
 package com.ratrecommends
 
-import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.assets.{AssetLoaderParameters, AssetDescriptor}
+import com.badlogic.gdx.scenes.scene2d.utils.{Layout, ChangeListener}
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent
-import com.badlogic.gdx.scenes.scene2d.utils.{Layout, ChangeListener, DragListener}
-import com.badlogic.gdx.scenes.scene2d.{Actor, Group, InputEvent}
 
-import scala.concurrent.ExecutionContext
+import scala.reflect.ClassTag
 
-package object gdx {
-
-  implicit val executionContext: ExecutionContext = new ExecutionContext {
-    override def execute(runnable: Runnable): Unit = Gdx.app.postRunnable(runnable)
-
-    override def reportFailure(cause: Throwable): Unit = Gdx.app.log("com.ratrecommends.gdx", "execution failed", cause)
-  }
+package object gdx extends GdxTypeAliases with GdxExecutionContext {
 
   implicit class RichActor[A <: Actor](val actor: A) extends AnyVal {
 
@@ -28,10 +21,6 @@ package object gdx {
       override def changed(event: ChangeEvent, actor: Actor): Unit = code
     })
 
-    def onDrag(f: (Float, Float) => Unit) = actor.addListener(new DragListener {
-      override def drag(event: InputEvent, x: Float, y: Float, pointer: Int): Unit = f(getDeltaX, getDeltaY)
-    })
-
     def visible(value: Boolean): A = {
       actor.setVisible(value)
       actor
@@ -44,10 +33,23 @@ package object gdx {
   }
 
   implicit class RichLayout[A <: Layout](val widget: A) extends AnyVal {
+
     def fillParent(value: Boolean): A = {
       widget.setFillParent(value)
       widget
     }
+
   }
 
+  implicit class RichString(val str: String) extends AnyVal {
+
+    def loadedAs[A: ClassTag] = {
+      new AssetDescriptor[A](str, implicitly[ClassTag[A]].runtimeClass.asInstanceOf[Class[A]])
+    }
+
+    def loadedAs[A: ClassTag](params: AssetLoaderParameters[A] = null) = {
+      new AssetDescriptor[A](str, implicitly[ClassTag[A]].runtimeClass.asInstanceOf[Class[A]], params)
+    }
+
+  }
 }
