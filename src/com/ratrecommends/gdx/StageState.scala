@@ -42,6 +42,7 @@ class StageState(viewport: Viewport = null, batch: Batch = null) extends AppStat
   }
 
   override protected final def rendered(): Unit = {
+    onPrerendered()
     Gdx.gl.glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a)
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
     _stage.act()
@@ -64,6 +65,8 @@ class StageState(viewport: Viewport = null, batch: Batch = null) extends AppStat
   protected def onResumed(): Unit = ()
 
   protected def onResized(width: Int, height: Int): Unit = ()
+
+  protected def onPrerendered():Unit = ()
 
   protected def onRendered(): Unit = ()
 
