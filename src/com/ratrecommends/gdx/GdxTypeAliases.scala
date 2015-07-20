@@ -16,4 +16,13 @@ trait GdxTypeAliases {
   type Table = com.badlogic.gdx.scenes.scene2d.ui.Table
   type Vector2 = com.badlogic.gdx.math.Vector2
   type HorizontalGroup = com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup
+  type ShapeRenderer = com.badlogic.gdx.graphics.glutils.ShapeRenderer
+  type Batch = com.badlogic.gdx.graphics.g2d.Batch
+  type Stage = com.badlogic.gdx.scenes.scene2d.Stage
+  type Viewport = com.badlogic.gdx.utils.viewport.Viewport
+  type ScalingViewport = com.badlogic.gdx.utils.viewport.ScalingViewport
+  type OrthographicCamera = com.badlogic.gdx.graphics.OrthographicCamera
+
+  type ShapeActor = com.ratrecommends.gdx.scene2d.ShapeActor
+
 }

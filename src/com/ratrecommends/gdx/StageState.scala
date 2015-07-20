@@ -1,11 +1,8 @@
 package com.ratrecommends.gdx
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.graphics.{GL20, Color, OrthographicCamera}
-import com.badlogic.gdx.graphics.g2d.Batch
-import com.badlogic.gdx.scenes.scene2d.Stage
+import com.badlogic.gdx.graphics.{Color, GL20}
 import com.badlogic.gdx.utils.Scaling
-import com.badlogic.gdx.utils.viewport.{ScalingViewport, Viewport}
 
 class StageState(viewport: Viewport = null, batch: Batch = null) extends AppState {
 
@@ -66,7 +63,7 @@ class StageState(viewport: Viewport = null, batch: Batch = null) extends AppStat
 
   protected def onResized(width: Int, height: Int): Unit = ()
 
-  protected def onPrerendered():Unit = ()
+  protected def onPrerendered(): Unit = ()
 
   protected def onRendered(): Unit = ()
 
