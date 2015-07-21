@@ -31,6 +31,8 @@ package object gdx extends GdxTypeAliases with GdxExecutionContext {
       actor
     }
 
+    def addTo(stage: Stage): A = addTo(stage.getRoot)
+
     def wrap(): Container[A] = new Container(actor)
 
   }
