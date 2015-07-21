@@ -1,8 +1,8 @@
 package com.ratrecommends
 
-import com.badlogic.gdx.assets.{AssetLoaderParameters, AssetDescriptor}
-import com.badlogic.gdx.scenes.scene2d.utils.{Layout, ChangeListener}
+import com.badlogic.gdx.assets.{AssetDescriptor, AssetLoaderParameters}
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent
+import com.badlogic.gdx.scenes.scene2d.utils.{ChangeListener, Layout}
 
 import scala.reflect.ClassTag
 
@@ -30,6 +30,23 @@ package object gdx extends GdxTypeAliases with GdxExecutionContext {
       group.addActor(actor)
       actor
     }
+
+    def wrap(): Container[A] = new Container(actor)
+
+  }
+
+  implicit class RichGroup[A <: Group](val group: A) extends AnyVal {
+
+    def transform(value: Boolean): A = {
+      group.setTransform(value)
+      group
+    }
+
+    def children: Iterator[Actor] = {
+      import collection.convert.wrapAsScala._
+      group.getChildren.iterator()
+    }
+
   }
 
   implicit class RichLayout[A <: Layout](val widget: A) extends AnyVal {
@@ -52,4 +69,5 @@ package object gdx extends GdxTypeAliases with GdxExecutionContext {
     }
 
   }
+
 }

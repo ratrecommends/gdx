@@ -4,7 +4,7 @@ organizationName := "Rat Recommends Games"
 homepage := Some(url("https://github.com/ratrecommends/gdx/"))
 licenses += "BSD New" -> url("http://opensource.org/licenses/BSD-3-Clause")
 description := "Some helpful scala utils for libgdx"
-version := "0.3"
+version := "0.4-SNAPSHOT"
 
 pomExtra := {
   <developers>
