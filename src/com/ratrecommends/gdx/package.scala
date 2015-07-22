@@ -1,8 +1,9 @@
 package com.ratrecommends
 
-import com.badlogic.gdx.assets.{AssetDescriptor, AssetLoaderParameters}
+import com.badlogic.gdx.assets.{AssetLoaderParameters, AssetDescriptor}
+import com.badlogic.gdx.scenes.scene2d.{Stage, Action}
+import com.badlogic.gdx.scenes.scene2d.utils.{Layout, ChangeListener}
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent
-import com.badlogic.gdx.scenes.scene2d.utils.{ChangeListener, Layout}
 
 import scala.reflect.ClassTag
 
@@ -72,4 +73,15 @@ package object gdx extends GdxTypeAliases with GdxExecutionContext {
 
   }
 
+  implicit def func2action[A](f: () => A): Action = new Action {
+    var ran = false
+
+    override def act(delta: Float): Boolean = {
+      if (!ran) {
+        ran = true
+        f()
+      }
+      true
+    }
+  }
 }

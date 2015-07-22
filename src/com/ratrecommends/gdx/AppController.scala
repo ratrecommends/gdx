@@ -25,7 +25,6 @@ abstract class AppController extends ApplicationListener {
     }
   }
 
-
   final def pop(exitIfEmpty: Boolean = true): AppState = {
     val prev = states.pop()
     prev.pause()
@@ -42,6 +41,11 @@ abstract class AppController extends ApplicationListener {
     prev
   }
 
+  final def replace(newState:AppState):Unit = {
+    if (stateExists)
+      pop(false)
+    push(newState)
+  }
 
   override final def create(): Unit = {
     isResumed = true
