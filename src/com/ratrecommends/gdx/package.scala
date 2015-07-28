@@ -1,9 +1,10 @@
 package com.ratrecommends
 
-import com.badlogic.gdx.assets.{AssetLoaderParameters, AssetDescriptor}
-import com.badlogic.gdx.scenes.scene2d.{Stage, Action}
-import com.badlogic.gdx.scenes.scene2d.utils.{Layout, ChangeListener}
+import com.badlogic.gdx.assets.{AssetDescriptor, AssetLoaderParameters}
+import com.badlogic.gdx.scenes.scene2d.Action
+import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent
+import com.badlogic.gdx.scenes.scene2d.utils.{ActorGestureListener, ChangeListener, Layout}
 
 import scala.reflect.ClassTag
 
@@ -22,6 +23,10 @@ package object gdx extends GdxTypeAliases with GdxExecutionContext {
       override def changed(event: ChangeEvent, actor: Actor): Unit = code
     })
 
+    def onTap(code: => Unit): Unit = actor.addListener(new ActorGestureListener() {
+      override def tap(event: InputEvent, x: Float, y: Float, count: Int, button: Int): Unit = code
+    })
+
     def visible(value: Boolean): A = {
       actor.setVisible(value)
       actor
@@ -36,6 +41,18 @@ package object gdx extends GdxTypeAliases with GdxExecutionContext {
 
     def wrap(): Container[A] = new Container(actor)
 
+  }
+
+  implicit class RichSeq[A <: Actor](val seq: Seq[A]) extends AnyVal {
+    def toTable(defaults: Cell[_] => Unit = cell => (), vertical: Boolean = false): Table = {
+      val t = new Table
+      defaults(t.defaults())
+      seq.foreach { actor =>
+        val cell = t.add(actor)
+        if (vertical) cell.row()
+      }
+      t
+    }
   }
 
   implicit class RichGroup[A <: Group](val group: A) extends AnyVal {
