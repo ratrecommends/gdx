@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable._
 import com.badlogic.gdx.scenes.scene2d.actions.Actions._
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable
+import com.badlogic.gdx.scenes.scene2d.{Event, EventListener}
 import com.ratrecommends.gdx._
 import com.ratrecommends.gdx.scene2d.Window.WindowStyle
 
@@ -16,7 +17,7 @@ class Window[A](val style: WindowStyle) {
 
   def this(skin: Skin) = this(skin, "default")
 
-  private val root: WidgetGroup = new WidgetGroup with StageChecker {
+  val root: WidgetGroup = new WidgetGroup with StageChecker {
 
     def addedToStage(stage: Stage): Unit = {
       stage.cancelTouchFocus()
@@ -69,15 +70,16 @@ class Window[A](val style: WindowStyle) {
     if (windowParams.canClose) hide()
   }
 
-  final def show(at: Stage, params: A): Unit = show(at.getRoot, params, WindowParams.default)
+  final def show(at: Stage, params: A): this.type = show(at.getRoot, params, WindowParams.default)
 
-  final def show(at: Stage, params: A, windowParams: WindowParams): Unit = show(at.getRoot, params, windowParams)
+  final def show(at: Stage, params: A, windowParams: WindowParams): this.type = show(at.getRoot, params, windowParams)
 
-  final def show(at: Group, params: A, windowParams: WindowParams = WindowParams.default): Unit = if (!shown) {
+  final def show(at: Group, params: A, windowParams: WindowParams = WindowParams.default): this.type = if (!shown) {
     shown = true
     this.windowParams = windowParams
     at.addActor(root)
     root.clearActions()
+    root.addAction(delay(0.3f, () => notify(WindowEventType.Shown)))
     backContainer.clearActions()
     backContainer.addAction(fadeIn(0.3f, fade))
     content.setTouchable(childrenOnly)
@@ -90,8 +92,11 @@ class Window[A](val style: WindowStyle) {
     }
     onShow(params)
     onRefresh(params)
+    notify(WindowEventType.Show)
+    this
   } else {
     onRefresh(params)
+    this
   }
 
   final def hide() = if (shown) {
@@ -107,11 +112,47 @@ class Window[A](val style: WindowStyle) {
     backContainer.clearActions()
     backContainer.addAction(fadeOut(0.3f, fade))
     root.clearActions()
-    root.addAction(delay(0.3f, removeActor()))
+    root.addAction(delay(0.3f, sequence(removeActor(), () => notify(WindowEventType.Hidden))))
     onHide()
+    notify(WindowEventType.Hide)
+  }
+
+  private final def notify(windowEventType: WindowEventType) = {
+    val e = Pools.obtain[WindowEvent]
+    e.window = this
+    e.eventType = windowEventType
+    root.fire(e)
   }
 
   final def isShown = shown
+
+  final def onShow[U](code: => U): this.type = {
+    root.addListener(new WindowListener {
+      override def show(windowEvent: WindowEvent): Unit = code
+    })
+    this
+  }
+
+  final def onShown[U](code: => U): this.type = {
+    root.addListener(new WindowListener {
+      override def shown(windowEvent: WindowEvent): Unit = code
+    })
+    this
+  }
+
+  final def onHide[U](code: => U): this.type = {
+    root.addListener(new WindowListener {
+      override def hide(windowEvent: WindowEvent): Unit = code
+    })
+    this
+  }
+
+  final def onHidden[U](code: => U): this.type = {
+    root.addListener(new WindowListener {
+      override def hidden(windowEvent: WindowEvent): Unit = code
+    })
+    this
+  }
 
   protected def onInit(): Unit = ()
 
@@ -134,6 +175,49 @@ object Window {
   }
 
 }
+
+class WindowListener extends EventListener {
+  override final def handle(event: Event): Boolean = event match {
+    case we: WindowEvent =>
+      we.eventType match {
+        case WindowEventType.Show => show(we)
+        case WindowEventType.Shown => shown(we)
+        case WindowEventType.Hide => hide(we)
+        case WindowEventType.Hidden => hidden(we)
+      }
+      true
+    case _ =>
+      false
+  }
+
+  def show(windowEvent: WindowEvent): Unit = ()
+
+  def shown(windowEvent: WindowEvent): Unit = ()
+
+  def hide(windowEvent: WindowEvent): Unit = ()
+
+  def hidden(windowEvent: WindowEvent): Unit = ()
+}
+
+class WindowEvent extends Event {
+  var window: Window[_] = _
+  var eventType: WindowEventType = _
+}
+
+sealed abstract class WindowEventType
+
+object WindowEventType {
+
+  case object Show extends WindowEventType
+
+  case object Shown extends WindowEventType
+
+  case object Hide extends WindowEventType
+
+  case object Hidden extends WindowEventType
+
+}
+
 
 case class WindowParams(canClose: Boolean = true)
 
