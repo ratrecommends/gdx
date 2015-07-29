@@ -112,7 +112,10 @@ class Window[A](val style: WindowStyle) {
     backContainer.clearActions()
     backContainer.addAction(fadeOut(0.3f, fade))
     root.clearActions()
-    root.addAction(delay(0.3f, sequence(removeActor(), () => notify(WindowEventType.Hidden))))
+    root.addAction(delay(0.3f, () => {
+      notify(WindowEventType.Hidden)
+      root.remove()
+    }))
     onHide()
     notify(WindowEventType.Hide)
   }
