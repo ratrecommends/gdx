@@ -19,13 +19,19 @@ package object gdx extends GdxTypeAliases with GdxExecutionContext {
 
     def ascendantStream: Stream[Actor] = actor #:: parentStream
 
-    def onChange(code: => Unit): Unit = actor.addListener(new ChangeListener {
-      override def changed(event: ChangeEvent, actor: Actor): Unit = code
-    })
+    def onChange(code: => Unit): A = {
+      actor.addListener(new ChangeListener {
+        override def changed(event: ChangeEvent, actor: Actor): Unit = code
+      })
+      actor
+    }
 
-    def onTap(code: => Unit): Unit = actor.addListener(new ActorGestureListener() {
-      override def tap(event: InputEvent, x: Float, y: Float, count: Int, button: Int): Unit = code
-    })
+    def onTap(code: => Unit): A = {
+      actor.addListener(new ActorGestureListener() {
+        override def tap(event: InputEvent, x: Float, y: Float, count: Int, button: Int): Unit = code
+      })
+      actor
+    }
 
     def visible(value: Boolean): A = {
       actor.setVisible(value)
