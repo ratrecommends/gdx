@@ -49,7 +49,7 @@ package object gdx extends GdxTypeAliases with GdxExecutionContext {
 
   }
 
-  implicit class RichSeq[A <: Actor](val seq: Seq[A]) extends AnyVal {
+  implicit class RichIterable[A <: Actor](val seq: Iterable[A]) extends AnyVal {
     def toTable(defaults: Cell[_] => Unit = cell => (), vertical: Boolean = false): Table = {
       val t = new Table
       defaults(t.defaults())
