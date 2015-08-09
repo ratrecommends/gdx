@@ -4,7 +4,7 @@ import com.badlogic.gdx.assets.{AssetDescriptor, AssetLoaderParameters}
 import com.badlogic.gdx.scenes.scene2d.Action
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent
-import com.badlogic.gdx.scenes.scene2d.utils.{ActorGestureListener, ChangeListener, Layout}
+import com.badlogic.gdx.scenes.scene2d.utils.{Disableable, ActorGestureListener, ChangeListener, Layout}
 
 import scala.reflect.ClassTag
 
@@ -22,6 +22,16 @@ package object gdx extends GdxTypeAliases with GdxExecutionContext {
     def onChange(code: => Unit): A = {
       actor.addListener(new ChangeListener {
         override def changed(event: ChangeEvent, actor: Actor): Unit = code
+      })
+      actor
+    }
+
+    def onNextChange(code: => Unit): A = {
+      actor.addListener(new ChangeListener {
+        override def changed(event: ChangeEvent, actor: Actor): Unit = {
+          actor.removeListener(this)
+          code
+        }
       })
       actor
     }
@@ -61,6 +71,18 @@ package object gdx extends GdxTypeAliases with GdxExecutionContext {
     }
   }
 
+  implicit class RichLabel[A <: Label](val label: A) extends AnyVal {
+    def wrap(value: Boolean): A = {
+      label.setWrap(value)
+      label
+    }
+
+    def alignment(value:Int):A = {
+      label.setAlignment(value)
+      label
+    }
+  }
+
   implicit class RichGroup[A <: Group](val group: A) extends AnyVal {
 
     def transform(value: Boolean): A = {
@@ -94,6 +116,13 @@ package object gdx extends GdxTypeAliases with GdxExecutionContext {
       new AssetDescriptor[A](str, implicitly[ClassTag[A]].runtimeClass.asInstanceOf[Class[A]], params)
     }
 
+  }
+
+  implicit class RichDisableable[A <: Disableable](val disableable: A) extends AnyVal {
+    def disabled(value: Boolean): A = {
+      disableable.setDisabled(value)
+      disableable
+    }
   }
 
   implicit def func2action[A](f: () => A): Action = new Action {
