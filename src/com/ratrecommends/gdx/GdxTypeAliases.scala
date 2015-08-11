@@ -14,17 +14,17 @@ trait GdxTypeAliases {
   type Rectangle = com.badlogic.gdx.math.Rectangle
   type Label = com.badlogic.gdx.scenes.scene2d.ui.Label
   type Table = com.badlogic.gdx.scenes.scene2d.ui.Table
-  type Vector2 = com.badlogic.gdx.math.Vector2
   type HorizontalGroup = com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup
-  type ShapeRenderer = com.badlogic.gdx.graphics.glutils.ShapeRenderer
-  type Batch = com.badlogic.gdx.graphics.g2d.Batch
   type Stage = com.badlogic.gdx.scenes.scene2d.Stage
+  type ScrollPane = com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
+  type Batch = com.badlogic.gdx.graphics.g2d.Batch
+  type Vector2 = com.badlogic.gdx.math.Vector2
+  type ShapeRenderer = com.badlogic.gdx.graphics.glutils.ShapeRenderer
   type Viewport = com.badlogic.gdx.utils.viewport.Viewport
   type ScalingViewport = com.badlogic.gdx.utils.viewport.ScalingViewport
   type OrthographicCamera = com.badlogic.gdx.graphics.OrthographicCamera
   type StageChecker = com.ratrecommends.gdx.scene2d.utils.StageChecker
   type Window[A] = com.ratrecommends.gdx.scene2d.Window[A]
-
   type ShapeActor = com.ratrecommends.gdx.scene2d.ShapeActor
 
 }
