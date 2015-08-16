@@ -4,7 +4,7 @@ import com.badlogic.gdx.assets.{AssetDescriptor, AssetLoaderParameters}
 import com.badlogic.gdx.scenes.scene2d.Action
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent
-import com.badlogic.gdx.scenes.scene2d.utils.{Disableable, ActorGestureListener, ChangeListener, Layout}
+import com.badlogic.gdx.scenes.scene2d.utils._
 
 import scala.reflect.ClassTag
 
@@ -57,6 +57,18 @@ package object gdx extends GdxTypeAliases with GdxExecutionContext {
 
     def wrap(): Container[A] = new Container(actor)
 
+    def color(value: Color): A = {
+      actor.setColor(value)
+      actor
+    }
+
+  }
+
+  implicit class RichContainer[A <: Container[_]](val container: A) extends AnyVal {
+    def background(drawable: Drawable): A = {
+      container.setBackground(drawable)
+      container
+    }
   }
 
   implicit class RichIterable[A <: Actor](val seq: Iterable[A]) extends AnyVal {
@@ -72,12 +84,12 @@ package object gdx extends GdxTypeAliases with GdxExecutionContext {
   }
 
   implicit class RichLabel[A <: Label](val label: A) extends AnyVal {
-    def wrap(value: Boolean): A = {
+    def textWrap(value: Boolean): A = {
       label.setWrap(value)
       label
     }
 
-    def alignment(value:Int):A = {
+    def alignment(value: Int): A = {
       label.setAlignment(value)
       label
     }

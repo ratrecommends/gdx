@@ -1,14 +1,14 @@
 package com.ratrecommends.gdx
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.graphics.{Color, GL20}
+import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.utils.Scaling
 
 class StageState(viewport: Viewport = null, batch: Batch = null) extends AppState {
 
   private[this] final var _stage: Stage = _
 
-  val backgroundColor = new Color(Color.DARK_GRAY)
+  val backgroundColor = new Color(Color.DarkGray)
 
   final def stage: Stage = _stage
 
