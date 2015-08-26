@@ -8,7 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.utils._
 
 import scala.reflect.ClassTag
 
-package object gdx extends GdxTypeAliases with GdxExecutionContext {
+package object gdx extends GdxTypeAliases with GdxExecutionContext with GdxNet {
 
   implicit class RichActor[A <: Actor](val actor: A) extends AnyVal {
 
