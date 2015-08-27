@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Net.{HttpRequest, HttpResponseListener}
 import com.badlogic.gdx.net.HttpStatus
 
-import scala.concurrent.Promise
+import scala.concurrent.{Future, Promise}
 import scala.concurrent.duration.Duration.Infinite
 import scala.concurrent.duration.{Duration, FiniteDuration}
 
@@ -15,7 +15,7 @@ trait GdxNet {
                       method: HttpMethod = HttpGet,
                       headers: Map[String, String] = Map.empty,
                       timeout: Duration = Duration.Inf,
-                      followRedirects: Boolean = true) = {
+                      followRedirects: Boolean = true): Future[HttpResponse] = {
     val p = Promise[HttpResponse]()
     val request = new HttpRequest()
     request.setUrl(url)
@@ -36,15 +36,23 @@ trait GdxNet {
     request.setFollowRedirects(followRedirects)
 
     Gdx.net.sendHttpRequest(request, new HttpResponseListener {
+
       override def handleHttpResponse(response: com.badlogic.gdx.Net.HttpResponse): Unit = {
-        //todo
+        import collection.convert.wrapAsScala._
+        p.success(HttpResponse(
+          response.getStatus,
+          response.getHeaders.collect {
+            case (k, l) if !l.isEmpty => k -> l.get(0)
+          }.toMap,
+          response.getResult
+        ))
       }
 
       override def cancelled(): Unit = p.failure(new RuntimeException("cancelled"))
 
       override def failed(t: Throwable): Unit = p.failure(t)
     })
-    p
+    p.future
   }
 }
 
@@ -58,4 +66,4 @@ case object HttpPut extends HttpMethod
 
 case object HttpDelete extends HttpMethod
 
-case class HttpResponse(status: HttpStatus)
+case class HttpResponse(status: HttpStatus, headers: Map[String, String], result: Array[Byte])
