@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Action
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent
 import com.badlogic.gdx.scenes.scene2d.utils._
+import com.badlogic.gdx.utils.{SnapshotArray, ObjectMap}
 
 import scala.reflect.ClassTag
 
@@ -146,6 +147,40 @@ package object gdx extends GdxTypeAliases with GdxExecutionContext with GdxNet {
         f()
       }
       true
+    }
+  }
+
+
+
+
+  implicit class RichObjectMap[K, V](val map: ObjectMap[K, V]) extends AnyVal {
+    def getOrElseUpdate(key: K, fallback: => V): V = {
+      if (map.containsKey(key)) {
+        map.get(key)
+      } else {
+        val value = fallback
+        map.put(key, value)
+        value
+      }
+    }
+  }
+
+  implicit class RichSnapshotArray[V](val arr: SnapshotArray[V]) extends AnyVal {
+    def foreach[R](f: V => R) = {
+      val items = arr.begin()
+      val size = arr.size
+      var i = 0
+      while (i < size) {
+        f(items(i))
+        i += 1
+      }
+      arr.end()
+    }
+  }
+
+  implicit class RichArray[V](val arr: com.badlogic.gdx.utils.Array[V]) extends AnyVal {
+    def addIfNotContains(value: V, identity: Boolean) = {
+      if (!arr.contains(value, identity)) arr.add(value)
     }
   }
 }

@@ -4,7 +4,7 @@ organizationName := "Rat Recommends Games"
 homepage := Some(url("https://github.com/ratrecommends/gdx/"))
 licenses += "BSD New" -> url("http://opensource.org/licenses/BSD-3-Clause")
 description := "Some helpful scala utils for libgdx"
-version := "0.7-SNAPSHOT"
+version := "0.7.1"
 
 pomExtra := {
   <developers>
@@ -37,7 +37,7 @@ resourceDirectory in Test := baseDirectory.value / "res"
 
 crossPaths := false
 
-libraryDependencies += "com.badlogicgames.gdx" % "gdx" % "1.6.4"
+libraryDependencies += "com.badlogicgames.gdx" % "gdx" % "1.6.5"
 
 scalacOptions ++= Seq(
   "-feature",

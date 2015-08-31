@@ -1,13 +1,27 @@
 package com.ratrecommends.gdx
 
+import com.badlogic.gdx.utils.{SnapshotArray, ObjectMap}
 import com.badlogic.gdx.{Gdx, utils, ApplicationListener}
 
 abstract class AppController extends ApplicationListener {
 
   private[this] final val states = new utils.Array[AppState]()
+  private[this] final val listeners = new ObjectMap[AppEvent, utils.SnapshotArray[() => Unit]]()
   private[this] final var isResumed = false
   private[this] final var previousWidth = -1
   private[this] final var previousHeight = -1
+
+  final def addListener(event: AppEvent, listener: () => Unit) = {
+    listeners.getOrElseUpdate(event, new SnapshotArray()).addIfNotContains(listener, identity = true)
+  }
+
+  final def removeListener(event: AppEvent, listener: () => Unit) = if (listeners.containsKey(event)) {
+    listeners.get(event).removeValue(listener, true)
+  }
+
+  private[this] final def notify(event: AppEvent) = if (listeners.containsKey(event)) {
+    listeners.get(event).foreach(_.apply())
+  }
 
   final def state: AppState = states.peek()
 
@@ -41,7 +55,7 @@ abstract class AppController extends ApplicationListener {
     prev
   }
 
-  final def replace(newState:AppState):Unit = {
+  final def replace(newState: AppState): Unit = {
     if (stateExists)
       pop(false)
     push(newState)
@@ -50,6 +64,7 @@ abstract class AppController extends ApplicationListener {
   override final def create(): Unit = {
     isResumed = true
     created()
+    notify(AppEvent.Created)
   }
 
   override final def resume(): Unit = {
@@ -60,6 +75,7 @@ abstract class AppController extends ApplicationListener {
         state.resize(previousWidth, previousHeight)
       }
     }
+    notify(AppEvent.Resumed)
   }
 
   override final def resize(width: Int, height: Int): Unit = {
@@ -85,6 +101,7 @@ abstract class AppController extends ApplicationListener {
         state.pause()
       }
     }
+    notify(AppEvent.Paused)
   }
 
   override final def dispose(): Unit = {
@@ -92,6 +109,7 @@ abstract class AppController extends ApplicationListener {
       pop(false)
     }
     disposed()
+    notify(AppEvent.Disposed)
   }
 
   def created(): Unit
