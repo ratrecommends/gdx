@@ -66,6 +66,15 @@ trait GdxTypeAliases {
 
   type Stage = com.badlogic.gdx.scenes.scene2d.Stage
   type ScrollPane = com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
+
+  object ScrollPane {
+    def apply(): ScrollPane = new ScrollPane(null)
+
+    def apply(v: Actor): ScrollPane = new ScrollPane(v)
+
+    def apply(v: Actor, skin: Skin): ScrollPane = new ScrollPane(v, skin)
+  }
+
   type Batch = com.badlogic.gdx.graphics.g2d.Batch
   type Vector2 = com.badlogic.gdx.math.Vector2
   type ShapeRenderer = com.badlogic.gdx.graphics.glutils.ShapeRenderer

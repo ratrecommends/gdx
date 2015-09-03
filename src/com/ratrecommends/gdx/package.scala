@@ -199,4 +199,11 @@ package object gdx extends GdxTypeAliases with GdxExecutionContext with GdxNet {
     }
   }
 
+  implicit class RichTextField[A <: TextField](val textField: A) extends AnyVal {
+    def messageText(value: String): A = {
+      textField.setMessageText(value)
+      textField
+    }
+  }
+
 }
