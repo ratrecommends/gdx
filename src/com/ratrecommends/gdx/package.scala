@@ -197,6 +197,14 @@ package object gdx extends GdxTypeAliases with GdxExecutionContext with GdxNet {
     def addIfNotContains(value: V, identity: Boolean) = {
       if (!arr.contains(value, identity)) arr.add(value)
     }
+
+    def foreach[R](f: V => R) = {
+      var i = 0
+      while (i < arr.size) {
+        f(arr.get(i))
+        i += 1
+      }
+    }
   }
 
   implicit class RichTextField[A <: TextField](val textField: A) extends AnyVal {
