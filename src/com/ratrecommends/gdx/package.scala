@@ -96,6 +96,18 @@ package object gdx extends GdxTypeAliases with GdxExecutionContext with GdxNet {
     }
   }
 
+  implicit class RichSelectBox[A, B <: SelectBox[A]](val selectBox: B) extends AnyVal {
+    def items(seq: A*): B = {
+      selectBox.setItems(seq: _*)
+      selectBox
+    }
+
+    def items(seq: Iterable[A]): B = {
+      selectBox.setItems(seq.toSeq: _*)
+      selectBox
+    }
+  }
+
   implicit class RichGroup[A <: Group](val group: A) extends AnyVal {
 
     def transform(value: Boolean): A = {
@@ -114,6 +126,11 @@ package object gdx extends GdxTypeAliases with GdxExecutionContext with GdxNet {
 
     def fillParent(value: Boolean): A = {
       widget.setFillParent(value)
+      widget
+    }
+
+    def packed(): A = {
+      widget.pack()
       widget
     }
 
@@ -151,8 +168,6 @@ package object gdx extends GdxTypeAliases with GdxExecutionContext with GdxNet {
   }
 
 
-
-
   implicit class RichObjectMap[K, V](val map: ObjectMap[K, V]) extends AnyVal {
     def getOrElseUpdate(key: K, fallback: => V): V = {
       if (map.containsKey(key)) {
@@ -183,4 +198,5 @@ package object gdx extends GdxTypeAliases with GdxExecutionContext with GdxNet {
       if (!arr.contains(value, identity)) arr.add(value)
     }
   }
+
 }

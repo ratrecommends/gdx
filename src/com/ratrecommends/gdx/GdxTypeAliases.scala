@@ -6,6 +6,13 @@ trait GdxTypeAliases {
   type Actor = com.badlogic.gdx.scenes.scene2d.Actor
   type Group = com.badlogic.gdx.scenes.scene2d.Group
   type Container[T <: Actor] = com.badlogic.gdx.scenes.scene2d.ui.Container[T]
+
+  object Container {
+    def apply[A <: Actor](): Container[A] = new Container()
+
+    def apply[A <: Actor](actor: A): Container[A] = new Container(actor)
+  }
+
   type Image = com.badlogic.gdx.scenes.scene2d.ui.Image
 
   object Image {
@@ -28,6 +35,14 @@ trait GdxTypeAliases {
     def apply(text: CharSequence, skin: Skin): Label = new Label(text, skin)
   }
 
+  type TextField = com.badlogic.gdx.scenes.scene2d.ui.TextField
+
+  object TextField {
+    def apply(skin: Skin): TextField = apply("", skin)
+
+    def apply(text: String, skin: Skin): TextField = new TextField(text, skin)
+  }
+
   type Table = com.badlogic.gdx.scenes.scene2d.ui.Table
   type HorizontalGroup = com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup
 
@@ -40,9 +55,9 @@ trait GdxTypeAliases {
   }
 
   type VerticalGroup = com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
-  
+
   object VerticalGroup {
-    def apply(actors:Actor*):VerticalGroup = {
+    def apply(actors: Actor*): VerticalGroup = {
       val g = new VerticalGroup()
       actors.foreach(_.addTo(g))
       g
@@ -99,5 +114,15 @@ trait GdxTypeAliases {
     val bottomLeft = bottom | left
     val bottomRight = bottom | right
   }
+
+  type SelectBox[A] = com.badlogic.gdx.scenes.scene2d.ui.SelectBox[A]
+
+  object SelectBox {
+    def apply[A](skin: Skin): SelectBox[A] = new SelectBox(skin)
+
+    def apply[A](skin: Skin, items: A*): SelectBox[A] = new SelectBox(skin)
+  }
+
+  type CheckBox = com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 
 }
