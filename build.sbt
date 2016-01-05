@@ -37,12 +37,13 @@ resourceDirectory in Test := baseDirectory.value / "res"
 
 crossPaths := false
 
-libraryDependencies += "com.badlogicgames.gdx" % "gdx" % "1.6.5"
+libraryDependencies += "com.badlogicgames.gdx" % "gdx" % "1.7.1"
 
 scalacOptions ++= Seq(
   "-feature",
   "-language:postfixOps",
-  "-language:implicitConversions"
+  "-language:implicitConversions",
+  "-language:higherKinds"
 )
 
 publishTo := {

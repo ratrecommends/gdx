@@ -5,6 +5,18 @@ trait GdxTypeAliases {
   type I18NBundle = com.badlogic.gdx.utils.I18NBundle
   type Actor = com.badlogic.gdx.scenes.scene2d.Actor
   type Group = com.badlogic.gdx.scenes.scene2d.Group
+  type GdxArray[A] = com.badlogic.gdx.utils.Array[A]
+
+  object Group {
+    def apply(transform: Boolean = true, touchable: Touchable = Touchable.enabled): Group = {
+      new Group().transform(transform).touchable(touchable)
+    }
+
+    def apply(actors: Actor*): Group = {
+      new Group().addAll(actors: _*)
+    }
+  }
+
   type Container[T <: Actor] = com.badlogic.gdx.scenes.scene2d.ui.Container[T]
 
   object Container {
@@ -77,6 +89,19 @@ trait GdxTypeAliases {
 
   type Batch = com.badlogic.gdx.graphics.g2d.Batch
   type Vector2 = com.badlogic.gdx.math.Vector2
+
+  object Vector2 {
+    def apply() = new Vector2
+
+    def apply(vector: Vector2) = new Vector2(vector)
+
+    def apply(x: Float, y: Float) = new Vector2(x, y)
+
+    def apply(actor: Actor) = new Vector2(actor.getX, actor.getY)
+
+    def apply(actor: Actor, align: Int) = new Vector2(actor.getX(align), actor.getY(align))
+  }
+
   type ShapeRenderer = com.badlogic.gdx.graphics.glutils.ShapeRenderer
   type Viewport = com.badlogic.gdx.utils.viewport.Viewport
   type ScalingViewport = com.badlogic.gdx.utils.viewport.ScalingViewport
@@ -133,5 +158,13 @@ trait GdxTypeAliases {
   }
 
   type CheckBox = com.badlogic.gdx.scenes.scene2d.ui.CheckBox
+
+  type Touchable = com.badlogic.gdx.scenes.scene2d.Touchable
+
+  object Touchable {
+    val enabled = com.badlogic.gdx.scenes.scene2d.Touchable.enabled
+    val disabled = com.badlogic.gdx.scenes.scene2d.Touchable.disabled
+    val childrenOnly = com.badlogic.gdx.scenes.scene2d.Touchable.childrenOnly
+  }
 
 }

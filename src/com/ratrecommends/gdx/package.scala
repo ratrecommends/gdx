@@ -1,7 +1,7 @@
 package com.ratrecommends
 
 import com.badlogic.gdx.assets.{AssetDescriptor, AssetLoaderParameters}
-import com.badlogic.gdx.scenes.scene2d.Action
+import com.badlogic.gdx.scenes.scene2d.{Touchable, Action}
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent
 import com.badlogic.gdx.scenes.scene2d.utils._
@@ -63,6 +63,27 @@ package object gdx extends GdxTypeAliases with GdxExecutionContext with GdxNet {
       actor
     }
 
+    def position(x: Float, y: Float): A = {
+      actor.setPosition(x, y)
+      actor
+    }
+
+    def position(x: Float, y: Float, align: Int): A = {
+      actor.setPosition(x, y, align)
+      actor
+    }
+
+    def move(dx: Float, dy: Float): A = {
+      actor.moveBy(dx, dy)
+      actor
+    }
+
+    def touchable(value: Touchable): A = {
+      actor.setTouchable(value)
+      actor
+    }
+
+
   }
 
   implicit class RichContainer[A <: Container[_]](val container: A) extends AnyVal {
@@ -90,6 +111,11 @@ package object gdx extends GdxTypeAliases with GdxExecutionContext with GdxNet {
       label
     }
 
+    def fontScale(value: Float): A = {
+      label.setFontScale(value)
+      label
+    }
+
     def alignment(value: Int): A = {
       label.setAlignment(value)
       label
@@ -112,6 +138,11 @@ package object gdx extends GdxTypeAliases with GdxExecutionContext with GdxNet {
 
     def transform(value: Boolean): A = {
       group.setTransform(value)
+      group
+    }
+
+    def addAll(actors: Actor*): A = {
+      actors.foreach(_.addTo(group))
       group
     }
 
@@ -193,17 +224,36 @@ package object gdx extends GdxTypeAliases with GdxExecutionContext with GdxNet {
     }
   }
 
-  implicit class RichArray[V](val arr: com.badlogic.gdx.utils.Array[V]) extends AnyVal {
-    def addIfNotContains(value: V, identity: Boolean) = {
+  implicit class RichArray[A](val arr: com.badlogic.gdx.utils.Array[A]) extends AnyVal {
+    def addIfNotContains(value: A, identity: Boolean) = {
       if (!arr.contains(value, identity)) arr.add(value)
     }
 
-    def foreach[R](f: V => R) = {
+    def foreach[R](f: A => R) = {
       var i = 0
       while (i < arr.size) {
         f(arr.get(i))
         i += 1
       }
+    }
+
+    def minBy[B: Ordering](f: A => B) = {
+      var minF: B = null.asInstanceOf[B]
+      var minElem: A = null.asInstanceOf[A]
+      var first = true
+      val cmp = implicitly[Ordering[B]]
+      var i = 0
+      while (i < arr.size) {
+        val elem = arr.get(i)
+        val fx = f(elem)
+        if (first || cmp.lt(fx, minF)) {
+          minElem = elem
+          minF = fx
+          first = false
+        }
+        i += 1
+      }
+      minElem
     }
   }
 
