@@ -5,7 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.{Touchable, Action}
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent
 import com.badlogic.gdx.scenes.scene2d.utils._
-import com.badlogic.gdx.utils.{SnapshotArray, ObjectMap}
+import com.badlogic.gdx.utils.{ObjectSet, SnapshotArray, ObjectMap}
 
 import scala.reflect.ClassTag
 
@@ -73,6 +73,11 @@ package object gdx extends GdxTypeAliases with GdxExecutionContext with GdxNet {
       actor
     }
 
+    def position(vec: Vector2): A = {
+      actor.setPosition(vec.x, vec.y)
+      actor
+    }
+
     def move(dx: Float, dy: Float): A = {
       actor.moveBy(dx, dy)
       actor
@@ -80,6 +85,21 @@ package object gdx extends GdxTypeAliases with GdxExecutionContext with GdxNet {
 
     def touchable(value: Touchable): A = {
       actor.setTouchable(value)
+      actor
+    }
+
+    def widthTo(w: Float): A = {
+      actor.setWidth(w)
+      actor
+    }
+
+    def heightTo(h: Float): A = {
+      actor.setHeight(h)
+      actor
+    }
+
+    def sizeTo(w: Float, h: Float): A = {
+      actor.setSize(w, h)
       actor
     }
 
@@ -196,6 +216,8 @@ package object gdx extends GdxTypeAliases with GdxExecutionContext with GdxNet {
       }
       true
     }
+
+    override def restart() = ran = false
   }
 
 
@@ -207,6 +229,15 @@ package object gdx extends GdxTypeAliases with GdxExecutionContext with GdxNet {
         val value = fallback
         map.put(key, value)
         value
+      }
+    }
+  }
+
+  implicit class RichObjectSet[A](val set: ObjectSet[A]) extends AnyVal {
+    def foreach(f: A => Unit): Unit = {
+      val it = set.iterator()
+      while (it.hasNext()) {
+        f(it.next())
       }
     }
   }

@@ -7,6 +7,10 @@ trait GdxTypeAliases {
   type Group = com.badlogic.gdx.scenes.scene2d.Group
   type GdxArray[A] = com.badlogic.gdx.utils.Array[A]
 
+  object GdxArray {
+    def apply[A](): GdxArray[A] = new GdxArray[A]
+  }
+
   object Group {
     def apply(transform: Boolean = true, touchable: Touchable = Touchable.enabled): Group = {
       new Group().transform(transform).touchable(touchable)

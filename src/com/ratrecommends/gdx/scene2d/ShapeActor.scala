@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.GL20
 import com.ratrecommends.gdx._
 
-abstract class ShapeActor(private final val renderer: ShapeRenderer) extends Actor {
+abstract class ShapeActor(final val renderer: ShapeRenderer) extends Actor {
 
   final var lineWidth = 1
   final var blendingEnabled = true
