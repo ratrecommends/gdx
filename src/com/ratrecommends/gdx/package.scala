@@ -125,6 +125,22 @@ package object gdx extends GdxTypeAliases with GdxExecutionContext with GdxNet {
     }
   }
 
+  implicit class RichStage[A <: Stage](val stage: A) extends AnyVal {
+    def onKey(key: Int)(code: => Unit): A = {
+      stage.addListener(new InputListener {
+        override def keyUp(event: InputEvent, keycode: Int) = {
+          if (key == keycode) {
+            code
+            true
+          } else {
+            super.keyUp(event, keycode)
+          }
+        }
+      })
+      stage
+    }
+  }
+
   implicit class RichLabel[A <: Label](val label: A) extends AnyVal {
     def textWrap(value: Boolean): A = {
       label.setWrap(value)
