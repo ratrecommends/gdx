@@ -20,6 +20,11 @@ package object gdx extends GdxTypeAliases with GdxExecutionContext with GdxNet {
 
     def ascendantStream: Stream[Actor] = actor #:: parentStream
 
+    def onChangeAndNow(code: => Unit): A = {
+      code
+      onChange(code)
+    }
+
     def onChange(code: => Unit): A = {
       actor.addListener(new ChangeListener {
         override def changed(event: ChangeEvent, actor: Actor): Unit = code
