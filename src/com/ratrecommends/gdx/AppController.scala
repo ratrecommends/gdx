@@ -1,12 +1,12 @@
 package com.ratrecommends.gdx
 
-import com.badlogic.gdx.utils.{SnapshotArray, ObjectMap}
-import com.badlogic.gdx.{Gdx, utils, ApplicationListener}
+import com.badlogic.gdx.utils.SnapshotArray
+import com.badlogic.gdx.{ApplicationListener, Gdx, utils}
 
 abstract class AppController extends ApplicationListener {
 
   private[this] final val states = new utils.Array[AppState]()
-  private[this] final val listeners = new ObjectMap[AppEvent, utils.SnapshotArray[() => Unit]]()
+  private[this] final val listeners = ObjectMap[AppEvent, utils.SnapshotArray[() => Unit]]()
   private[this] final var isResumed = false
   private[this] final var previousWidth = -1
   private[this] final var previousHeight = -1

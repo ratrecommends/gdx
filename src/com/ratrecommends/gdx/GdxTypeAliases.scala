@@ -4,12 +4,26 @@ trait GdxTypeAliases {
   type Skin = com.badlogic.gdx.scenes.scene2d.ui.Skin
   type I18NBundle = com.badlogic.gdx.utils.I18NBundle
   type Actor = com.badlogic.gdx.scenes.scene2d.Actor
-  type Group = com.badlogic.gdx.scenes.scene2d.Group
   type GdxArray[A] = com.badlogic.gdx.utils.Array[A]
 
   object GdxArray {
     def apply[A](): GdxArray[A] = new GdxArray[A]
   }
+
+  type ObjectSet[A] = com.badlogic.gdx.utils.ObjectSet[A]
+
+  object ObjectSet {
+    def apply[A]() = new ObjectSet[A]()
+  }
+
+  type ObjectMap[A, B] = com.badlogic.gdx.utils.ObjectMap[A, B]
+
+  object ObjectMap {
+    def apply[A, B]() = new ObjectMap[A, B]()
+  }
+
+  type Group = com.badlogic.gdx.scenes.scene2d.Group
+
 
   object Group {
     def apply(transform: Boolean = true, touchable: Touchable = Touchable.enabled): Group = {
@@ -158,7 +172,19 @@ trait GdxTypeAliases {
   object SelectBox {
     def apply[A](skin: Skin): SelectBox[A] = new SelectBox(skin)
 
-    def apply[A](skin: Skin, items: A*): SelectBox[A] = new SelectBox(skin)
+    def apply[A](skin: Skin, items: A*): SelectBox[A] = {
+      val res = new SelectBox[A](skin)
+      res.setItems(items: _*)
+      res
+    }
+
+    def apply[A](skin: Skin, str: A => String, items: A*): SelectBox[A] = {
+      val res = new SelectBox[A](skin) {
+        override def toString(obj: A) = str(obj)
+      }
+      res.setItems(items: _*)
+      res
+    }
   }
 
   type CheckBox = com.badlogic.gdx.scenes.scene2d.ui.CheckBox

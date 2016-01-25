@@ -126,10 +126,14 @@ package object gdx extends GdxTypeAliases with GdxExecutionContext with GdxNet {
   }
 
   implicit class RichStage[A <: Stage](val stage: A) extends AnyVal {
-    def onKey(key: Int)(code: => Unit): A = {
+    def onKey(key: Int,
+              ctrl: BooleanPredicate = BooleanPredicate.AnyMatches,
+              alt: BooleanPredicate = BooleanPredicate.AnyMatches,
+              shift: BooleanPredicate = BooleanPredicate.AnyMatches)(code: => Unit): A = {
       stage.addListener(new InputListener {
         override def keyUp(event: InputEvent, keycode: Int) = {
-          if (key == keycode) {
+
+          if (key == keycode && ctrl.check(UIUtils.ctrl()) && shift.check(UIUtils.shift()) && alt.check(UIUtils.alt())) {
             code
             true
           } else {
