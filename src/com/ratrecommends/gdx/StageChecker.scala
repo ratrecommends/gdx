@@ -1,6 +1,4 @@
-package com.ratrecommends.gdx.scene2d.utils
-
-import com.badlogic.gdx.scenes.scene2d.{Stage, Actor}
+package com.ratrecommends.gdx
 
 trait StageChecker extends Actor {
   abstract override def setStage(stage: Stage): Unit = {

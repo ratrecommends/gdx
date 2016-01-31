@@ -124,7 +124,6 @@ trait GdxTypeAliases {
   type Viewport = com.badlogic.gdx.utils.viewport.Viewport
   type ScalingViewport = com.badlogic.gdx.utils.viewport.ScalingViewport
   type OrthographicCamera = com.badlogic.gdx.graphics.OrthographicCamera
-  type StageChecker = com.ratrecommends.gdx.scene2d.utils.StageChecker
   type Window[A] = com.ratrecommends.gdx.scene2d.Window[A]
   type ShapeActor = com.ratrecommends.gdx.scene2d.ShapeActor
   type Color = com.badlogic.gdx.graphics.Color

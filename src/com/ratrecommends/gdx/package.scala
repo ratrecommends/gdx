@@ -25,20 +25,28 @@ package object gdx extends GdxTypeAliases with GdxExecutionContext with GdxNet {
       onChange(code)
     }
 
+    def onChangeAndNow(f: A => Unit): A = {
+      f(actor)
+      onChange(f)
+    }
+
     def onChange(code: => Unit): A = {
-      actor.addListener(new ChangeListener {
-        override def changed(event: ChangeEvent, actor: Actor): Unit = code
-      })
+      actor.addListener(ChangeListener(code))
+      actor
+    }
+
+    def onChange(f: A => Unit): A = {
+      actor.addListener(ChangeListener(f(actor)))
       actor
     }
 
     def onNextChange(code: => Unit): A = {
-      actor.addListener(new ChangeListener {
-        override def changed(event: ChangeEvent, actor: Actor): Unit = {
-          actor.removeListener(this)
-          code
-        }
-      })
+      actor.addListener(ChangeListener.once(code))
+      actor
+    }
+
+    def onNextChange(f: A => Unit): A = {
+      actor.addListener(ChangeListener.once(f(actor)))
       actor
     }
 
