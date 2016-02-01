@@ -301,6 +301,26 @@ package object gdx extends GdxTypeAliases with GdxExecutionContext with GdxNet {
       }
     }
 
+    def forall(p: A => Boolean) = {
+      var res = true
+      var i = 0
+      while (res && i < arr.size) {
+        res = p(arr.get(i))
+        i += 1
+      }
+      res
+    }
+
+    def exists(p: A => Boolean) = {
+      var res = false
+      var i = 0
+      while (!res && i < arr.size) {
+        res = p(arr.get(i))
+        i += 1
+      }
+      res
+    }
+
     def minBy[B: Ordering](f: A => B) = {
       var minF: B = null.asInstanceOf[B]
       var minElem: A = null.asInstanceOf[A]
