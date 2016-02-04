@@ -17,7 +17,7 @@ class Window[A](val style: WindowStyle) {
 
   def this(skin: Skin) = this(skin, "default")
 
-  val root: WidgetGroup = new WidgetGroup with StageChecker {
+  final val root: WidgetGroup = new WidgetGroup with StageChecker {
 
     def addedToStage(stage: Stage): Unit = {
       stage.cancelTouchFocus()
@@ -69,6 +69,10 @@ class Window[A](val style: WindowStyle) {
   backContainer.onTap {
     if (windowParams.canClose) hide()
   }
+
+  final def show(at: Group)(implicit ev: Unit <:< A): this.type = show(at, ())
+
+  final def show(at: Stage)(implicit ev: Unit <:< A): this.type = show(at, ())
 
   final def show(at: Stage, params: A): this.type = show(at.getRoot, params, WindowParams.default)
 
