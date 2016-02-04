@@ -11,7 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.{Event, EventListener}
 import com.ratrecommends.gdx._
 import com.ratrecommends.gdx.scene2d.Window.WindowStyle
 
-class Window[A](val style: WindowStyle) {
+class Window[A, B](val style: WindowStyle) {
 
   def this(skin: Skin, styleName: String) = this(skin.get(styleName, classOf[WindowStyle]))
 
@@ -55,7 +55,7 @@ class Window[A](val style: WindowStyle) {
     override def keyDown(event: InputEvent, keycode: Int): Boolean = {
       event.stop()
       if (windowParams.canClose && (keycode == Input.Keys.ESCAPE || keycode == Input.Keys.BACK)) {
-        hide()
+        hide(null.asInstanceOf[B])
       }
       true
     }
@@ -67,7 +67,7 @@ class Window[A](val style: WindowStyle) {
   backContainer.getColor.a = 0
   backContainer.setFillParent(true)
   backContainer.onTap {
-    if (windowParams.canClose) hide()
+    if (windowParams.canClose) hide(null.asInstanceOf[B])
   }
 
   final def show(at: Group)(implicit ev: Unit <:< A): this.type = show(at, ())
@@ -83,7 +83,7 @@ class Window[A](val style: WindowStyle) {
     this.windowParams = windowParams
     at.addActor(root)
     root.clearActions()
-    root.addAction(delay(0.3f, () => notify(WindowEventType.Shown)))
+    root.addAction(delay(0.3f, () => notify(WindowEventType.Shown, params = params)))
     backContainer.clearActions()
     backContainer.addAction(fadeIn(0.3f, fade))
     content.setTouchable(childrenOnly)
@@ -96,14 +96,16 @@ class Window[A](val style: WindowStyle) {
     }
     onShow(params)
     onRefresh(params)
-    notify(WindowEventType.Show)
+    notify(WindowEventType.Show, params = params)
     this
   } else {
     onRefresh(params)
     this
   }
 
-  final def hide() = if (shown) {
+  final def hide()(implicit ev: Unit <:< B): Unit = hide(())
+
+  final def hide(result: B) = if (shown) {
     shown = false
     if (root.getStage != null) {
       root.getStage.setKeyboardFocus(previousKeyboardFocus)
@@ -117,49 +119,46 @@ class Window[A](val style: WindowStyle) {
     backContainer.addAction(fadeOut(0.3f, fade))
     root.clearActions()
     root.addAction(delay(0.3f, () => {
-      notify(WindowEventType.Hidden)
+      notify(WindowEventType.Hidden, result = result)
       root.remove()
     }))
-    onHide()
-    notify(WindowEventType.Hide)
+    onHide(result)
+    notify(WindowEventType.Hide, result = result)
   }
 
-  private final def notify(windowEventType: WindowEventType) = {
-    val e = Pools.obtain[WindowEvent]
+  private final def notify(windowEventType: WindowEventType,
+                           params: A = null.asInstanceOf[A],
+                           result: B = null.asInstanceOf[B]) = {
+    val e = Pools.obtain[WindowEvent[A, B]]
     e.window = this
     e.eventType = windowEventType
+    e.params = params
+    e.result = result
     root.fire(e)
   }
 
   final def isShown = shown
 
-  final def onShow[U](code: => U): this.type = {
-    root.addListener(new WindowListener {
-      override def show(windowEvent: WindowEvent): Unit = code
-    })
+  final def subscribe(listener: WindowListener[A, B]): this.type = {
+    root.addListener(listener)
     this
   }
 
-  final def onShown[U](code: => U): this.type = {
-    root.addListener(new WindowListener {
-      override def shown(windowEvent: WindowEvent): Unit = code
-    })
-    this
-  }
+  final def onShow(code: => Unit): this.type = subscribe(WindowListener.show(_ => code))
 
-  final def onHide[U](code: => U): this.type = {
-    root.addListener(new WindowListener {
-      override def hide(windowEvent: WindowEvent): Unit = code
-    })
-    this
-  }
+  final def onShow(f: A => Unit): this.type = subscribe(WindowListener.show(f))
 
-  final def onHidden[U](code: => U): this.type = {
-    root.addListener(new WindowListener {
-      override def hidden(windowEvent: WindowEvent): Unit = code
-    })
-    this
-  }
+  final def onShown(code: => Unit): this.type = subscribe(WindowListener.shown(_ => code))
+
+  final def onShown(f: A => Unit): this.type = subscribe(WindowListener.shown(f))
+
+  final def onHide(code: => Unit): this.type = subscribe(WindowListener.hide(_ => code))
+
+  final def onHide(f: B => Unit): this.type = subscribe(WindowListener.hide(f))
+
+  final def onHidden(code: => Unit): this.type = subscribe(WindowListener.hidden(_ => code))
+
+  final def onHidden(f: B => Unit): this.type = subscribe(WindowListener.hidden(f))
 
   protected def onInit(): Unit = ()
 
@@ -167,7 +166,7 @@ class Window[A](val style: WindowStyle) {
 
   protected def onRefresh(params: A): Unit = ()
 
-  protected def onHide(): Unit = ()
+  protected def onHide(result: B): Unit = ()
 
 }
 
@@ -183,9 +182,9 @@ object Window {
 
 }
 
-class WindowListener extends EventListener {
+class WindowListener[A, B] extends EventListener {
   override final def handle(event: Event): Boolean = event match {
-    case we: WindowEvent =>
+    case we: WindowEvent[A, B] =>
       we.eventType match {
         case WindowEventType.Show => show(we)
         case WindowEventType.Shown => shown(we)
@@ -197,18 +196,46 @@ class WindowListener extends EventListener {
       false
   }
 
-  def show(windowEvent: WindowEvent): Unit = ()
+  def show(windowEvent: WindowEvent[A, B]): Unit = ()
 
-  def shown(windowEvent: WindowEvent): Unit = ()
+  def shown(windowEvent: WindowEvent[A, B]): Unit = ()
 
-  def hide(windowEvent: WindowEvent): Unit = ()
+  def hide(windowEvent: WindowEvent[A, B]): Unit = ()
 
-  def hidden(windowEvent: WindowEvent): Unit = ()
+  def hidden(windowEvent: WindowEvent[A, B]): Unit = ()
 }
 
-class WindowEvent extends Event {
-  var window: Window[_] = _
+object WindowListener {
+  def show[A, B](f: A => Unit): WindowListener[A, B] = new WindowListener[A, B] {
+    override def show(e: WindowEvent[A, B]) = f(e.params)
+  }
+
+  def shown[A, B](f: A => Unit): WindowListener[A, B] = new WindowListener[A, B] {
+    override def shown(e: WindowEvent[A, B]) = f(e.params)
+  }
+
+  def hide[A, B](f: B => Unit): WindowListener[A, B] = new WindowListener[A, B] {
+    override def hide(e: WindowEvent[A, B]) = if (e.result != null) f(e.result)
+  }
+
+  def hidden[A, B](f: B => Unit): WindowListener[A, B] = new WindowListener[A, B] {
+    override def hidden(e: WindowEvent[A, B]) = if (e.result != null) f(e.result)
+  }
+}
+
+class WindowEvent[A, B] extends Event {
+  var window: Window[A, B] = _
   var eventType: WindowEventType = _
+  var result: B = _
+  var params: A = _
+
+  override def reset() = {
+    super.reset()
+    window = null
+    eventType = null
+    params = null.asInstanceOf[A]
+    result = null.asInstanceOf[B]
+  }
 }
 
 sealed abstract class WindowEventType

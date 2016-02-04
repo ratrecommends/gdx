@@ -1,6 +1,8 @@
 package com.ratrecommends
 
+import com.badlogic.gdx.Input
 import com.badlogic.gdx.assets.{AssetDescriptor, AssetLoaderParameters}
+import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldListener
 import com.badlogic.gdx.scenes.scene2d.{Touchable, Action}
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent
@@ -144,13 +146,13 @@ package object gdx extends GdxTypeAliases with GdxExecutionContext with GdxNet {
               alt: BooleanPredicate = BooleanPredicate.AnyMatches,
               shift: BooleanPredicate = BooleanPredicate.AnyMatches)(code: => Unit): A = {
       stage.addListener(new InputListener {
-        override def keyUp(event: InputEvent, keycode: Int) = {
+        override def keyDown(event: InputEvent, keycode: Int) = {
 
           if (key == keycode && ctrl.check(UIUtils.ctrl()) && shift.check(UIUtils.shift()) && alt.check(UIUtils.alt())) {
             code
             true
           } else {
-            super.keyUp(event, keycode)
+            super.keyDown(event, keycode)
           }
         }
       })
@@ -344,6 +346,20 @@ package object gdx extends GdxTypeAliases with GdxExecutionContext with GdxNet {
   implicit class RichTextField[A <: TextField](val textField: A) extends AnyVal {
     def messageText(value: String): A = {
       textField.setMessageText(value)
+      textField
+    }
+
+    def onSubmit(f: String => Unit): A = {
+      textField.addListener(new InputListener{
+        override def keyDown(event: InputEvent, keycode: Int) = {
+          if (keycode == Input.Keys.ENTER) {
+            f(textField.getText)
+            true
+          } else {
+            super.keyDown(event, keycode)
+          }
+        }
+      })
       textField
     }
   }
