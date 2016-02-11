@@ -46,13 +46,13 @@ trait GdxTypeAliases {
   type Image = com.badlogic.gdx.scenes.scene2d.ui.Image
 
   object Image {
-    def apply(skin: Skin, drawableName: String): Image = new Image(skin, drawableName)
+    def apply(drawableName: String)(implicit skin: Skin): Image = new Image(skin, drawableName)
   }
 
   type TextButton = com.badlogic.gdx.scenes.scene2d.ui.TextButton
 
   object TextButton {
-    def apply(text: String, skin: Skin): TextButton = new TextButton(text, skin)
+    def apply(text: String)(implicit skin: Skin): TextButton = new TextButton(text, skin)
   }
 
   type WidgetGroup = com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
@@ -62,15 +62,13 @@ trait GdxTypeAliases {
   type Label = com.badlogic.gdx.scenes.scene2d.ui.Label
 
   object Label {
-    def apply(text: CharSequence, skin: Skin): Label = new Label(text, skin)
+    def apply(text: CharSequence)(implicit skin: Skin): Label = new Label(text, skin)
   }
 
   type TextField = com.badlogic.gdx.scenes.scene2d.ui.TextField
 
   object TextField {
-    def apply(skin: Skin): TextField = apply("", skin)
-
-    def apply(text: String, skin: Skin): TextField = new TextField(text, skin)
+    def apply(text: String = "")(implicit skin: Skin): TextField = new TextField(text, skin)
   }
 
   type Table = com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -169,17 +167,17 @@ trait GdxTypeAliases {
   type SelectBox[A] = com.badlogic.gdx.scenes.scene2d.ui.SelectBox[A]
 
   object SelectBox {
-    def apply[A](skin: Skin): SelectBox[A] = new SelectBox(skin)
+    def apply[A]()(implicit skin: Skin): SelectBox[A] = new SelectBox(skin)
 
-    def apply[A](skin: Skin, items: A*): SelectBox[A] = {
+    def apply[A](items: A*)(implicit skin: Skin): SelectBox[A] = {
       val res = new SelectBox[A](skin)
       res.setItems(items: _*)
       res
     }
 
-    def apply[A](skin: Skin, str: A => String, items: A*): SelectBox[A] = {
+    def apply[A](stringifier: A => String, items: A*)(implicit skin: Skin): SelectBox[A] = {
       val res = new SelectBox[A](skin) {
-        override def toString(obj: A) = str(obj)
+        override def toString(obj: A) = stringifier(obj)
       }
       res.setItems(items: _*)
       res

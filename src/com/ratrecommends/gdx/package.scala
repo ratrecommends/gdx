@@ -350,7 +350,7 @@ package object gdx extends GdxTypeAliases with GdxExecutionContext with GdxNet {
     }
 
     def onSubmit(f: String => Unit): A = {
-      textField.addListener(new InputListener{
+      textField.addListener(new InputListener {
         override def keyDown(event: InputEvent, keycode: Int) = {
           if (keycode == Input.Keys.ENTER) {
             f(textField.getText)
@@ -360,6 +360,16 @@ package object gdx extends GdxTypeAliases with GdxExecutionContext with GdxNet {
           }
         }
       })
+      textField
+    }
+
+    def selected(): A = {
+      textField.selectAll()
+      textField
+    }
+
+    def focusedOn(stage: Stage): A = {
+      stage.setKeyboardFocus(textField)
       textField
     }
   }

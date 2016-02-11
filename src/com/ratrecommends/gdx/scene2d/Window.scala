@@ -92,7 +92,7 @@ class Window[A, B](val style: WindowStyle) {
     content.addAction(fadeIn(0.3f, fade))
     if (!initialized) {
       initialized = true
-      onInit()
+      onInit(params)
     }
     onShow(params)
     onRefresh(params)
@@ -160,7 +160,7 @@ class Window[A, B](val style: WindowStyle) {
 
   final def onHidden(f: B => Unit): this.type = subscribe(WindowListener.hidden(f))
 
-  protected def onInit(): Unit = ()
+  protected def onInit(initialParams: A): Unit = ()
 
   protected def onShow(params: A): Unit = ()
 
