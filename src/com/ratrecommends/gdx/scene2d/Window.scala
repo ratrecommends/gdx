@@ -105,7 +105,7 @@ class Window[A, B](val style: WindowStyle) {
 
   final def hide()(implicit ev: Unit <:< B): Unit = hide(())
 
-  final def hide(result: B) = if (shown) {
+  final def hide(result: B): Unit = if (shown) {
     shown = false
     if (root.getStage != null) {
       root.getStage.setKeyboardFocus(previousKeyboardFocus)
