@@ -1,5 +1,9 @@
 package com.ratrecommends.gdx
 
+import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle
+import com.ratrecommends.gdx.scene2d.ContextMenu.ContextMenuStyle
+import com.ratrecommends.gdx.scene2d.ContextMenuItem
+
 trait GdxTypeAliases {
   type Skin = com.badlogic.gdx.scenes.scene2d.ui.Skin
   type I18NBundle = com.badlogic.gdx.utils.I18NBundle
@@ -63,6 +67,8 @@ trait GdxTypeAliases {
 
   object Label {
     def apply(text: CharSequence)(implicit skin: Skin): Label = new Label(text, skin)
+
+    def apply(text: CharSequence, style: LabelStyle): Label = new Label(text, style)
   }
 
   type TextField = com.badlogic.gdx.scenes.scene2d.ui.TextField
@@ -132,6 +138,16 @@ trait GdxTypeAliases {
 
     def apply[A](f: (A => Unit) => Actor)(implicit skin: Skin): Window[Unit, A] = new Window[Unit, A](skin) {
       override protected def onInit(initialParams: Unit) = content.setActor(f(hide))
+    }
+  }
+
+  type ContextMenu[A] = com.ratrecommends.gdx.scene2d.ContextMenu[A]
+
+  object ContextMenu {
+    def apply[A](items: ContextMenuItem[A]*)(implicit skin: Skin) = {
+      val res = new ContextMenu[A](skin.get("default", classOf[ContextMenuStyle]))
+      items.foreach(res.add)
+      res
     }
   }
 

@@ -256,13 +256,13 @@ package object gdx extends GdxTypeAliases with GdxExecutionContext with GdxNet {
   }
 
 
-  implicit class RichObjectMap[K, V](val map: ObjectMap[K, V]) extends AnyVal {
+  implicit class RichObjectMap[K, V](val m: ObjectMap[K, V]) extends AnyVal {
     def getOrElseUpdate(key: K, fallback: => V): V = {
-      if (map.containsKey(key)) {
-        map.get(key)
+      if (m.containsKey(key)) {
+        m.get(key)
       } else {
         val value = fallback
-        map.put(key, value)
+        m.put(key, value)
         value
       }
     }
@@ -340,6 +340,13 @@ package object gdx extends GdxTypeAliases with GdxExecutionContext with GdxNet {
         i += 1
       }
       minElem
+    }
+
+    def toSeq: IndexedSeq[A] = {
+      val b = Vector.newBuilder[A]
+      b.sizeHint(arr.size)
+      arr.foreach(b +=)
+      b.result()
     }
   }
 
