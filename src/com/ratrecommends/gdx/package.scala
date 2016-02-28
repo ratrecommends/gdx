@@ -118,6 +118,31 @@ package object gdx extends GdxTypeAliases with GdxExecutionContext with GdxNet {
       actor
     }
 
+    def onAct(f: => Unit): A = {
+      actor.addAction(new Action {
+        def act(delta: Float) = {
+          f
+          false
+        }
+      })
+      actor
+    }
+
+    def onActUntilDone(f: => Boolean): A = {
+      actor.addAction(new Action {
+        var done = false
+
+        def act(delta: Float) = {
+          if (!done) {
+            done = f
+          }
+          done
+        }
+
+        override def restart() = done = false
+      })
+      actor
+    }
 
   }
 
