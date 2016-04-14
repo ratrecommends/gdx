@@ -60,6 +60,11 @@ trait GdxTypeAliases {
   }
 
   type WidgetGroup = com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
+
+  object WidgetGroup {
+    def apply(): WidgetGroup = new WidgetGroup()
+  }
+
   type InputListener = com.badlogic.gdx.scenes.scene2d.InputListener
   type InputEvent = com.badlogic.gdx.scenes.scene2d.InputEvent
   type Rectangle = com.badlogic.gdx.math.Rectangle

@@ -280,6 +280,13 @@ package object gdx extends GdxTypeAliases with GdxExecutionContext with GdxNet {
     override def restart() = ran = false
   }
 
+  implicit class RichSkin(val s: Skin) extends AnyVal {
+
+    def apply[A: ClassTag]: A = s.get(implicitly[ClassTag[A]].runtimeClass.asInstanceOf[Class[A]])
+
+    def apply[A: ClassTag](name: String): A = s.get(name, implicitly[ClassTag[A]].runtimeClass.asInstanceOf[Class[A]])
+
+  }
 
   implicit class RichObjectMap[K, V](val m: ObjectMap[K, V]) extends AnyVal {
     def getOrElseUpdate(key: K, fallback: => V): V = {
