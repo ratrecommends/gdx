@@ -3,11 +3,11 @@ package com.ratrecommends
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.assets.{AssetDescriptor, AssetLoaderParameters}
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldListener
-import com.badlogic.gdx.scenes.scene2d.{Touchable, Action}
+import com.badlogic.gdx.scenes.scene2d.{Action, EventListener, Touchable}
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent
 import com.badlogic.gdx.scenes.scene2d.utils._
-import com.badlogic.gdx.utils.{ObjectSet, SnapshotArray, ObjectMap}
+import com.badlogic.gdx.utils.{ObjectMap, ObjectSet, SnapshotArray}
 
 import scala.reflect.ClassTag
 
@@ -52,6 +52,11 @@ package object gdx extends GdxTypeAliases with GdxExecutionContext with GdxNet {
       actor
     }
 
+    def withListener(listener: EventListener): A = {
+      actor.addListener(listener)
+      actor
+    }
+
     def onTap(code: => Unit): A = {
       actor.addListener(new ActorGestureListener() {
         override def tap(event: InputEvent, x: Float, y: Float, count: Int, button: Int): Unit = code
@@ -75,6 +80,11 @@ package object gdx extends GdxTypeAliases with GdxExecutionContext with GdxNet {
 
     def color(value: Color): A = {
       actor.setColor(value)
+      actor
+    }
+
+    def alpha(value: Float): A = {
+      actor.getColor.a = value
       actor
     }
 
@@ -262,6 +272,11 @@ package object gdx extends GdxTypeAliases with GdxExecutionContext with GdxNet {
   implicit class RichDisableable[A <: Disableable](val disableable: A) extends AnyVal {
     def disabled(value: Boolean): A = {
       disableable.setDisabled(value)
+      disableable
+    }
+
+    def enabled(value: Boolean): A = {
+      disableable.setDisabled(!value)
       disableable
     }
   }

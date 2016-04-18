@@ -15,3 +15,15 @@ trait StageChecker extends Actor {
 
   def removedFromStage(stage: Stage): Unit
 }
+
+object StageChecker {
+
+  trait Added extends StageChecker {
+    final def removedFromStage(stage: Stage) = ()
+  }
+
+  trait Removed extends StageChecker {
+    final def addedToStage(stage: Stage) = ()
+  }
+
+}
