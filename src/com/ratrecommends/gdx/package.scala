@@ -428,4 +428,6 @@ package object gdx extends GdxTypeAliases with GdxExecutionContext with GdxNet {
     }
   }
 
+  implicit def stage2Group(stage: Stage): Group = stage.getRoot
+
 }

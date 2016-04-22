@@ -133,18 +133,6 @@ trait GdxTypeAliases {
   type Viewport = com.badlogic.gdx.utils.viewport.Viewport
   type ScalingViewport = com.badlogic.gdx.utils.viewport.ScalingViewport
   type OrthographicCamera = com.badlogic.gdx.graphics.OrthographicCamera
-  type Window[A, B] = com.ratrecommends.gdx.scene2d.Window[A, B]
-
-  object Window {
-
-    def apply[A, B](f: (A, B => Unit) => Actor)(implicit skin: Skin): Window[A, B] = new Window[A, B](skin) {
-      override protected def onInit(initialParams: A) = content.setActor(f(initialParams, hide))
-    }
-
-    def apply[A](f: (A => Unit) => Actor)(implicit skin: Skin): Window[Unit, A] = new Window[Unit, A](skin) {
-      override protected def onInit(initialParams: Unit) = content.setActor(f(hide))
-    }
-  }
 
   type ContextMenu[A] = com.ratrecommends.gdx.scene2d.ContextMenu[A]
 
