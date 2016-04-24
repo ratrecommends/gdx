@@ -37,7 +37,7 @@ resourceDirectory in Test := baseDirectory.value / "res"
 
 crossPaths := false
 
-libraryDependencies += "com.badlogicgames.gdx" % "gdx" % "1.8.0"
+libraryDependencies += "com.badlogicgames.gdx" % "gdx" % "1.9.2"
 
 scalacOptions ++= Seq(
   "-feature",
