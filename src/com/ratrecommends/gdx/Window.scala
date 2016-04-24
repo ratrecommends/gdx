@@ -2,20 +2,23 @@ package com.ratrecommends.gdx
 
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.math.Interpolation._
-import com.badlogic.gdx.scenes.scene2d.{Event, EventListener}
 import com.badlogic.gdx.scenes.scene2d.actions.Actions._
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable
+import com.badlogic.gdx.scenes.scene2d.{Event, EventListener}
 import com.ratrecommends.gdx.Window.WindowStyle
 import com.ratrecommends.gdx.WindowEventType._
 import com.ratrecommends.gdx.util.StyleCompanion
 
-final class Window[A, B](val style: WindowStyle, val view: Actor) {
+abstract class Window[A, B](implicit val style: WindowStyle) {
 
-  private var shown = false
-  private var previousKeyboardFocus: Actor = _
-  private var windowParams: WindowParams[A] = _
+  val view: Actor
 
-  private[gdx] val root: WidgetGroup = new WidgetGroup with StageChecker.Added {
+  private final var shown = false
+  private final var initialized = false
+  private final var previousKeyboardFocus: Actor = _
+  private final var windowParams: WindowParams[A] = _
+
+  private[gdx] final val root: WidgetGroup = new WidgetGroup with StageChecker.Added {
     def addedToStage(stage: Stage) = {
       stage.cancelTouchFocus()
       previousKeyboardFocus = stage.getKeyboardFocus
@@ -31,22 +34,25 @@ final class Window[A, B](val style: WindowStyle, val view: Actor) {
     }
   ))
 
-  private val backContainer = new Image(style.background).wrap().fill().fillParent(true).addTo(root).onTap {
+  private final val backContainer = new Image(style.background).wrap().fill().fillParent(true).addTo(root).onTap {
     if (windowParams.canClose) hide(null.asInstanceOf[B])
   }
-  private val content = view.wrap().fillParent(true).alpha(0).position(0, -style.contentAnimationOffset).addTo(root)
+  private final val content = Container[Actor]().fillParent(true).alpha(0).position(0, -style.contentAnimationOffset).addTo(root)
 
   if (style.backgroundColor != null) {
     backContainer.getActor.setColor(style.backgroundColor)
   }
   backContainer.alpha(0)
 
+  final def show(at: Group)(implicit ev: Unit <:< A): this.type = show(at, WindowParams(()))
 
-  def show(at: Group)(implicit ev: Unit <:< A): this.type = show(at, WindowParams(()))
+  final def hide()(implicit ev: Unit <:< B): Unit = hide(())
 
-  def hide()(implicit ev: Unit <:< B): Unit = hide(())
-
-  def show(at: Group, params: WindowParams[A]): this.type = {
+  final def show(at: Group, params: WindowParams[A]): this.type = {
+    if (!initialized) {
+      initialized = true
+      content.setActor(view)
+    }
     if (!shown) {
       shown = true
       windowParams = params
@@ -65,7 +71,7 @@ final class Window[A, B](val style: WindowStyle, val view: Actor) {
     this
   }
 
-  def hide(result: B): Unit = if (shown) {
+  final def hide(result: B): Unit = if (shown) {
     shown = false
     if (root.getStage != null) {
       root.getStage.setKeyboardFocus(previousKeyboardFocus)
@@ -86,9 +92,9 @@ final class Window[A, B](val style: WindowStyle, val view: Actor) {
   }
 
 
-  private[gdx] def notify(windowEventType: WindowEventType,
-                          params: WindowParams[A] = null.asInstanceOf[A],
-                          result: B = null.asInstanceOf[B]) = {
+  private[gdx] final def notify(windowEventType: WindowEventType,
+                                params: WindowParams[A] = null.asInstanceOf[A],
+                                result: B = null.asInstanceOf[B]) = {
     val e = Pools.obtain[WindowEvent[A, B]]
     e.window = this
     e.eventType = windowEventType
@@ -98,28 +104,28 @@ final class Window[A, B](val style: WindowStyle, val view: Actor) {
     Pools.free(e)
   }
 
-  private def subscribe(pf: PartialFunction[WindowEventType, WindowEvent[A, B] => Unit]): this.type = {
+  private final def subscribe(pf: PartialFunction[WindowEventType, WindowEvent[A, B] => Unit]): this.type = {
     root.addListener(WindowListener(pf))
     this
   }
 
-  def onShow(callback: WindowParams[A] => Unit) = subscribe {
+  final def onShow(callback: WindowParams[A] => Unit) = subscribe {
     case Show => e => callback(e.params)
   }
 
-  def onShown(callback: WindowParams[A] => Unit) = subscribe {
+  final def onShown(callback: WindowParams[A] => Unit) = subscribe {
     case Shown => e => callback(e.params)
   }
 
-  def onRefresh(callback: WindowParams[A] => Unit) = subscribe {
+  final def onRefresh(callback: WindowParams[A] => Unit) = subscribe {
     case Refresh => e => callback(e.params)
   }
 
-  def onHide(callback: B => Unit) = subscribe {
+  final def onHide(callback: B => Unit) = subscribe {
     case Hide => e => callback(e.result)
   }
 
-  def onHidden(callback: B => Unit) = subscribe {
+  final def onHidden(callback: B => Unit) = subscribe {
     case Hidden => e => callback(e.result)
   }
 
@@ -135,7 +141,9 @@ object WindowParams {
 
 object Window {
 
-  def apply[A, B](view: Actor)(implicit style: WindowStyle) = new Window[A, B](style, view)
+  def apply[A, B](actor: Actor)(implicit style: WindowStyle) = new Window[A, B] {
+    val view = actor
+  }
 
   final class WindowStyle {
     var background: Drawable = _
@@ -149,7 +157,7 @@ object Window {
 
 }
 
-sealed abstract class WindowEventType
+sealed trait WindowEventType
 
 object WindowEventType {
 

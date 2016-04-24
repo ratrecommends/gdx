@@ -14,6 +14,12 @@ trait GdxTypeAliases {
     def apply[A](): GdxArray[A] = new GdxArray[A]
   }
 
+  type SnapshotArray[A] = com.badlogic.gdx.utils.SnapshotArray[A]
+
+  object SnapshotArray {
+    def apply[A](): SnapshotArray[A] = new SnapshotArray()
+  }
+
   type ObjectSet[A] = com.badlogic.gdx.utils.ObjectSet[A]
 
   object ObjectSet {
@@ -71,6 +77,8 @@ trait GdxTypeAliases {
   type Label = com.badlogic.gdx.scenes.scene2d.ui.Label
 
   object Label {
+    def apply()(implicit skin: Skin): Label = new Label("", skin)
+
     def apply(text: CharSequence)(implicit skin: Skin): Label = new Label(text, skin)
 
     def apply(text: CharSequence, style: LabelStyle): Label = new Label(text, style)
@@ -183,6 +191,19 @@ trait GdxTypeAliases {
     val topRight = top | right
     val bottomLeft = bottom | left
     val bottomRight = bottom | right
+  }
+
+  type Scaling = com.badlogic.gdx.utils.Scaling
+
+  object Scaling {
+    val fit = com.badlogic.gdx.utils.Scaling.fit
+    val fill = com.badlogic.gdx.utils.Scaling.fill
+    val fillX = com.badlogic.gdx.utils.Scaling.fillX
+    val fillY = com.badlogic.gdx.utils.Scaling.fillY
+    val stretch = com.badlogic.gdx.utils.Scaling.stretch
+    val stretchX = com.badlogic.gdx.utils.Scaling.stretchX
+    val stretchY = com.badlogic.gdx.utils.Scaling.stretchY
+    val none = com.badlogic.gdx.utils.Scaling.none
   }
 
   type SelectBox[A] = com.badlogic.gdx.scenes.scene2d.ui.SelectBox[A]

@@ -78,6 +78,8 @@ package object gdx extends GdxTypeAliases with GdxExecutionContext with GdxNet {
 
     def wrap(): Container[A] = new Container(actor)
 
+    def scrollable(): ScrollPane = new ScrollPane(actor)
+
     def color(value: Color): A = {
       actor.setColor(value)
       actor
@@ -179,19 +181,14 @@ package object gdx extends GdxTypeAliases with GdxExecutionContext with GdxNet {
     def onKey(key: Int,
               ctrl: BooleanPredicate = BooleanPredicate.AnyMatches,
               alt: BooleanPredicate = BooleanPredicate.AnyMatches,
-              shift: BooleanPredicate = BooleanPredicate.AnyMatches)(code: => Unit): A = {
-      stage.addListener(new InputListener {
-        override def keyDown(event: InputEvent, keycode: Int) = {
-
-          if (key == keycode && ctrl.check(UIUtils.ctrl()) && shift.check(UIUtils.shift()) && alt.check(UIUtils.alt())) {
-            code
-            true
-          } else {
-            super.keyDown(event, keycode)
-          }
+              shift: BooleanPredicate = BooleanPredicate.AnyMatches)(code: => Unit): InputListener = {
+      val listener = InputListener(onKeyDown = e => {
+        if (key == e.getKeyCode && ctrl.check(UIUtils.ctrl()) && shift.check(UIUtils.shift()) && alt.check(UIUtils.alt())) {
+          code
         }
       })
-      stage
+      stage.addListener(listener)
+      listener
     }
   }
 
@@ -338,8 +335,13 @@ package object gdx extends GdxTypeAliases with GdxExecutionContext with GdxNet {
   }
 
   implicit class RichArray[A](val arr: com.badlogic.gdx.utils.Array[A]) extends AnyVal {
-    def addIfNotContains(value: A, identity: Boolean) = {
-      if (!arr.contains(value, identity)) arr.add(value)
+    def addIfNotContains(value: A, identity: Boolean): Boolean = {
+      if (!arr.contains(value, identity)) {
+        arr.add(value)
+        true
+      } else {
+        false
+      }
     }
 
     def foreach[R](f: A => R) = {
@@ -426,6 +428,19 @@ package object gdx extends GdxTypeAliases with GdxExecutionContext with GdxNet {
       stage.setKeyboardFocus(textField)
       textField
     }
+  }
+
+  implicit class RichImage[A <: Image](val image: A) extends AnyVal {
+    def scaling(scaling: Scaling): A = {
+      image.setScaling(scaling)
+      image
+    }
+  }
+
+  implicit class RichI18nBundle(val bundle: I18NBundle) extends AnyVal {
+    def apply(key: String) = bundle.get(key)
+
+    def apply(key: String, args: Any*) = bundle.format(key, args.map(String.valueOf): _*)
   }
 
   implicit def stage2Group(stage: Stage): Group = stage.getRoot

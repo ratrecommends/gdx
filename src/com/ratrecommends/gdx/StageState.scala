@@ -2,29 +2,27 @@ package com.ratrecommends.gdx
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.GL20
-import com.badlogic.gdx.utils.Scaling
 
 class StageState(viewport: Viewport = null, batch: Batch = null) extends AppState {
 
-  private[this] final var _stage: Stage = _
-
-  val backgroundColor = new Color(Color.DarkGray)
-
-  final def stage: Stage = _stage
-
-  override protected final def entered(): Unit = {
+  final val stage: Stage = {
     if (viewport != null && batch != null) {
-      _stage = new Stage(viewport, batch)
+      new Stage(viewport, batch)
     } else if (viewport != null && batch == null) {
-      _stage = new Stage(viewport)
+      new Stage(viewport)
     } else if (viewport == null && batch != null) {
-      _stage = new Stage(
+      new Stage(
         new ScalingViewport(Scaling.stretch, Gdx.graphics.getWidth, Gdx.graphics.getHeight, new OrthographicCamera()),
         batch
       )
     } else {
-      _stage = new Stage()
+      new Stage()
     }
+  }
+
+  val backgroundColor = new Color(Color.DarkGray)
+
+  override protected final def entered(): Unit = {
     onEntered()
   }
 
@@ -34,7 +32,7 @@ class StageState(viewport: Viewport = null, batch: Batch = null) extends AppStat
   }
 
   override protected final def resized(width: Int, height: Int): Unit = {
-    _stage.getViewport.update(width, height, true)
+    stage.getViewport.update(width, height, true)
     onResized(width, height)
   }
 
@@ -42,8 +40,8 @@ class StageState(viewport: Viewport = null, batch: Batch = null) extends AppStat
     onPrerendered()
     Gdx.gl.glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a)
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
-    _stage.act()
-    _stage.draw()
+    stage.act()
+    stage.draw()
     onRendered()
   }
 
@@ -53,7 +51,7 @@ class StageState(viewport: Viewport = null, batch: Batch = null) extends AppStat
   }
 
   override protected final def exited(): Unit = {
-    _stage.dispose()
+    stage.dispose()
     onExited()
   }
 

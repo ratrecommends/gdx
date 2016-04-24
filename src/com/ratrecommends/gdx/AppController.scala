@@ -1,6 +1,5 @@
 package com.ratrecommends.gdx
 
-import com.badlogic.gdx.utils.SnapshotArray
 import com.badlogic.gdx.{ApplicationListener, Gdx, utils}
 
 abstract class AppController extends ApplicationListener {
