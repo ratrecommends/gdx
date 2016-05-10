@@ -175,6 +175,12 @@ package object gdx extends GdxTypeAliases with GdxExecutionContext with GdxNet {
       }
       t
     }
+
+    def toHorizontalGroup: HorizontalGroup = {
+      val res = HorizontalGroup()
+      seq.foreach(res.addActor)
+      res
+    }
   }
 
   implicit class RichStage[A <: Stage](val stage: A) extends AnyVal {

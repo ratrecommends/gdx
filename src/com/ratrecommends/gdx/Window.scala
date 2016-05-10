@@ -86,6 +86,9 @@ abstract class Window[A, B](implicit val style: WindowStyle) {
     root.clearActions()
     root.addAction(delay(0.3f, () => {
       notify(Hidden, result = result)
+      if (result != null) {
+        notify(Result, result = result)
+      }
       root.remove()
     }))
     notify(Hide, result = result)
@@ -129,6 +132,10 @@ abstract class Window[A, B](implicit val style: WindowStyle) {
     case Hidden => e => callback(e.result)
   }
 
+  final def onResult(callback: B => Unit) = subscribe {
+    case Result => e => callback(e.result)
+  }
+
 }
 
 case class WindowParams[A](value: A, canClose: Boolean = true)
@@ -170,6 +177,8 @@ object WindowEventType {
   case object Hide extends WindowEventType
 
   case object Hidden extends WindowEventType
+
+  case object Result extends WindowEventType
 
 }
 
